@@ -13,3 +13,15 @@ window.onload = function () {
     }
 }
 
+let clearButton = document.getElementById("clear");
+
+clearButton.addEventListener("click", function() {
+    screen.value = "";
+})
+
+let equalsButton = document.getElementById("equals");
+    equalsButton.addEventListener("click", function() {
+        screen.value = eval(screen.value);
+    });
+
+    

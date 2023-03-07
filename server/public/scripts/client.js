@@ -2,6 +2,8 @@ console.log('Hello World');
 
 const SERVER_URL = 'http://localhost:5001';
 const screen = document.getElementById('screen');
+const historyList = document.getElementById("history-list");
+
 
     const buttons = document.querySelectorAll("button:not(#clear):not(#backspace):not(#power):not(#divide):not(#multiply):not(#subtract):not(#add):not(#decimal):not(#equals)");
 
@@ -74,9 +76,8 @@ multiplyButton.addEventListener("click", function() {
 
 	// Add event listener to the decimal button
 	decimalButton.addEventListener("click", function() {
-		if (!screen.value.includes(".")) {
 			screen.value += ".";
-		}
+		
 	});
 
 	//  equals button
@@ -84,22 +85,33 @@ multiplyButton.addEventListener("click", function() {
 
 	// Add event listener to the equals button
 	equalsButton.addEventListener("click", function() {
-        console.log("screen.value:", screen.value);
+		console.log("screen.value:", screen.value);
 		axios.post(`${SERVER_URL}/calculate`, { input: screen.value })
-    .then((response) => {
-      console.log("response.data:", response.data);
-      axios.get(`${SERVER_URL}/calculate`, { params: { result: response.data.result } })
-        .then((response) => {
-          screen.value = response.data;
-        })
-        .catch((error) => {
-          console.error(error);
-        });
+		  .then((response) => {
+			console.log("response.data:", response.data);
+			axios.get(`${SERVER_URL}/history`)
+			  .then((response) => {
+				console.log("history response.data:", response.data);
+				displayHistory(response.data);
+				screen.value = response.data[response.data.length - 1].result;
+			  })
+			  .catch((error) => {
+				console.error(error);
+			  });
     })
     .catch((error) => {
       console.error(error);
     });
 });
+
+function displayHistory(history) {
+	historyList.innerHTML = "";
+	for (let i = 0; i < history.length; i++) {
+	  const li = document.createElement("li");
+	  li.textContent = `${history[i].input} = ${history[i].result}`;
+	  historyList.appendChild(li);
+	}
+  }
 
 
 
